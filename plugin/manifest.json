@@ -1,0 +1,29 @@
+{
+  "name": "4140 extension",
+  "version": "1.1",
+  "description": "csci4140 assignment 2",
+  "permissions": [
+    "bookmarks",
+    "tabs",
+    "contextMenus",
+    "storage",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background":{
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "browser_action": {
+    "default_title": "4140Extension",
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "content_scripts":[{
+      "matches": [ "http://*/*", "https://*/*"],
+      "js": ["myche.js", "caman.full.min.js"]
+  }],
+  "options_page": "options.html",
+  "manifest_version": 2,
+  "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'"
+}
