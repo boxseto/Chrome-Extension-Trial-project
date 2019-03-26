@@ -1,9 +1,3 @@
-//TODO: add image to CHV.fn.uploader.files
-//use CHV.fn.submit_image_edit
-//use CHV.fn.before_image_edit
-//CHV.fn.uploader.files
-//
-//
 function apply_camanJS(filter, canvas){
   Caman(canvas, function(){
     this.revert();
@@ -25,14 +19,16 @@ function modal_create(file_index){
   modal.setAttribute("class","fullscreen soft-black");
   modal.setAttribute("style","display: block; opacity: 1");
   modal.setAttribute("style","display: block; opacity: 1");
-  modal.innerHTML = '<div id="fullscreen-modal-box" class="clickable" style="transform: scale(1); opacity: 1; transition: all 250ms ease 0s;"><div id="fullscreen-modal-body"> <span class="modal-box-title">Edit image</span> <hr> <div class="modal-form"> <div class="image-preview"> <canvas class="canvas" id="canvas" width="512" height="512"></canvas> </div> <div id="Filters"> <div class="Filter"> <div class="FilterName"> <p>brightness</p> </div> <div class="FilterSetting"> <input type="range" min="-100" max="100" step="1" value="0"data-filter="brightness"> <span class="FilterValue">0</span> </div> </div> <div class="Filter"> <div class="FilterName"> <p>contrast</p> </div> <div class="FilterSetting"> <input type="range" min="-100" max="100" step="1" value="0" data-filter="contrast"> <span class="FilterValue">0</span> </div> </div> <div class="Filter"> <div class="FilterName"> <p>saturation</p> </div> <div class="FilterSetting"> <input type="range" min="-100" max="100" step="1" value="0" data-filter="saturation"> <span class="FilterValue">0</span> </div> </div> <div class="Filter"> <div class="FilterName"> <p>vibrance</p> </div> <div class="FilterSetting"> <input type="range" min="-100" max="100" step="1" value="0" data-filter="vibrance"> <span class="FilterValue">0</span> </div> </div> <div class="Filter"> <div class="FilterName"> <p>exposure</p> </div> <div class="FilterSetting"> <input type="range" min="-100" max="100" step="1" value="0" data-filter="exposure"> <span class="FilterValue">0</span> </div> </div> <div class="Clear"></div> </div> </div> </div> <div class="btn-container"> <button class="btn btn-input default" id="submitCaman" >Done</button> <button class="btn btn-input default" id="resetCaman" >Original Image</button> <button class="btn btn-input default" id="cancelCaman" >Cancel</button> <span class="btn-alt"></span> </div> <span class="close-modal icon-close" data-action="close-modal"></span> </div>';
+  modal.innerHTML = '<div id="fullscreen-modal-box" class="clickable" style="transform: scale(1); opacity: 1; transition: all 250ms ease 0s;"><div id="fullscreen-modal-body"> <span class="modal-box-title">Edit image</span> <hr> <div class="modal-form"> <div class="image-preview"> <canvas class="canvas" id="canvas" width="512" height="512" data-caman-hidpi-disabled="true"></canvas> </div> <div id="Filters"> <div class="Filter"> <div class="FilterName"> <p>brightness</p> </div> <div class="FilterSetting"> <input type="range" min="-100" max="100" step="1" value="0"data-filter="brightness"> <span class="FilterValue">0</span> </div> </div> <div class="Filter"> <div class="FilterName"> <p>contrast</p> </div> <div class="FilterSetting"> <input type="range" min="-100" max="100" step="1" value="0" data-filter="contrast"> <span class="FilterValue">0</span> </div> </div> <div class="Filter"> <div class="FilterName"> <p>saturation</p> </div> <div class="FilterSetting"> <input type="range" min="-100" max="100" step="1" value="0" data-filter="saturation"> <span class="FilterValue">0</span> </div> </div> <div class="Filter"> <div class="FilterName"> <p>vibrance</p> </div> <div class="FilterSetting"> <input type="range" min="-100" max="100" step="1" value="0" data-filter="vibrance"> <span class="FilterValue">0</span> </div> </div> <div class="Filter"> <div class="FilterName"> <p>exposure</p> </div> <div class="FilterSetting"> <input type="range" min="-100" max="100" step="1" value="0" data-filter="exposure"> <span class="FilterValue">0</span> </div> </div> <div class="Clear"></div> </div> </div> </div> <div class="btn-container"> <button class="btn btn-input default" id="submitCaman" >Done</button> <button class="btn btn-input default" id="resetCaman" >Original Image</button> <button class="btn btn-input default" id="cancelCaman" >Cancel</button> <span class="btn-alt"></span> </div> <span class="close-modal icon-close" data-action="close-modal"></span> </div>';
   modal.querySelector('.close-modal').addEventListener("click", function(){
     modal.remove();
   });
 
   //manage modal
   //get image file
-  var file_nodes = document.querySelectorAll(".preview .canvas");
+  var file_nodes = document.querySelectorAll("#original");
+  var preview_nodes = document.querySelectorAll(".preview .canvas");
+  console.log(file_nodes);
   //get canvas
   var c = modal.querySelector(".canvas");
 
@@ -40,6 +36,7 @@ function modal_create(file_index){
   c.width = file_nodes[file_index].width;
   c.height = file_nodes[file_index].height;
   c.getContext('2d').drawImage(file_nodes[file_index],0,0);
+  //c.getContext('2d').drawImage(image,0,0);
 
   //make modal show
   document.body.append(modal);
@@ -58,8 +55,11 @@ function modal_create(file_index){
   submit_caman.addEventListener("click", function(event){
     //var submittor = modal.createElement('script');
     //submittor.innerHTML = '';
-    file_nodes[file_index].getContext('2d').drawImage(c,0,0);
-    modal.remove();
+    preview_nodes[file_index].getContext('2d').drawImage(c,0,0);
+    var submit = document.createElement('script');
+    submit.innerHTML = 'function dataURLtoBlob(dataurl){ var arr = dataurl.split(","), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n); while(n--){ u8arr[n] = bstr.charCodeAt(n); } return new Blob([u8arr], {type:mime}); } var modal = document.querySelector("#canvas"); setTimeout(function(){ var blob = dataURLtoBlob(modal.toDataURL()); setTimeout(function(){ blob.uid = CHV.fn.uploader.files['+ file_index +'].uid; setTimeout(function(){ blob.name = CHV.fn.uploader.files['+ file_index +'].name; blob.parsedMeta = CHV.fn.uploader.files['+ file_index +'].parsedMeta; setTimeout(function(){ CHV.fn.uploader.files['+ file_index +'] = blob; },200); },200); },200); },200);';
+    modal.append(submit);
+    setTimeout(function(){ modal.remove();}, 1000);
   });
   //reset
   var reset_caman = document.querySelector("#resetCaman");
@@ -79,16 +79,11 @@ function modal_create(file_index){
 }
 
 function load_original(i){
-  /* load from CHV.fn.uploader.files
-  var scriptor = document.createElement('script');
-  scriptor.innerHTML = ' var item_list = document.querySelectorAll(\'.queue-item #original\'); item_list.forEach(function(element, i){ var reader = new FileReader(); reader.readAsDataURL(CHV.fn.uploader.files[i]); reader.onload = function(event){ if(event.target.readyState == FileReader.DONE){ var img = new Image(); img.src = event.target.result; img.onload = function(){ var canvas = element.getContext("2d"); canvas.height = parseInt(img.height); canvas.width = parseInt(img.width); canvas.drawImage(img,0,0); } } } });';
-  document.body.append(scriptor);
-  */
-    console.log(i);
+  i--;
   var original = document.querySelectorAll("#original");
   var preview = original[i].closest('li').querySelector('.canvas');
-  original[i].width = preview.originalWidth;
-  original[i].height = preview.originalHeight;
+  original[i].width = preview.width;
+  original[i].height = preview.height;
   original[i].getContext('2d').drawImage(preview,0,0);
 }
 
@@ -118,11 +113,11 @@ function initialize_crawler(){
         camanJSnode.appendChild(canvas);
         //add eventlistener
         camanJSnode.addEventListener("click", function(){
-          //load_original(i);
           modal_create(i);
         });
         //append
         mutationsList[0].target.children[i].appendChild(camanJSnode);
+        setTimeout(function(){load_original(i);}, 500);
       }
     }
   };
